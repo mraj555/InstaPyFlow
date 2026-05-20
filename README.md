@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Status-Active-orange?style=flat" alt="Status">
 </p>
 
-A powerful Python-based Instagram automation tool that enables automated photo uploads, batch processing, and smart notifications.
+A powerful Python-based Instagram automation tool that enables automated photo uploads, batch processing, format conversion, and smart notifications.
 
 ---
 
@@ -19,8 +19,8 @@ A powerful Python-based Instagram automation tool that enables automated photo u
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Basic Upload (autoinsta.py)](#basic-upload-autoinstapy)
-  - [Advanced Automation (autoinsta_2.py)](#advanced-automation-autoinsta_2py)
+  - [Basic Mode (autoinsta.py)](#basic-mode-autoinstapy)
+  - [Advanced Mode (autoinsta_2.py)](#advanced-mode-autoinsta_2py)
 - [Configuration](#configuration)
 - [Requirements](#requirements)
 - [Supported Image Formats](#supported-image-formats)
@@ -32,21 +32,28 @@ A powerful Python-based Instagram automation tool that enables automated photo u
 
 ## Overview
 
-InstaPyFlow is an automation toolkit designed to simplify Instagram account management through Python. It provides two operational modes: a simple photo uploader for quick posts and an advanced automation system with batch processing, format conversion, and email notifications.
+InstaPyFlow is an automation toolkit designed to simplify Instagram account management through Python. It provides two operational modes:
+
+1. **Basic Mode** - Simple single photo uploader for quick posts
+2. **Advanced Mode** - Comprehensive automation system with batch processing, format conversion, aspect ratio validation, and email notifications
 
 ---
 
 ## Features
 
-### Basic Features (autoinsta.py)
+### Basic Mode (autoinsta.py)
+
 - Instagram account authentication
 - Single photo upload with custom captions
 - JPEG/JPG format support
+- Simple and clean API
 
-### Advanced Features (autoinsta_2.py)
+### Advanced Mode (autoinsta_2.py)
+
 - **Random Photo Selection** - Automatically picks random photos from a designated folder
 - **Format Conversion** - Converts PNG images to JPEG before uploading
-- **Storage Management** - Tracks photo库存 and sends notifications
+- **Aspect Ratio Validation** - Automatically resizes images to Instagram's optimal 1080x1080 format
+- **Storage Management** - Tracks photo inventory and manages cleanup
 - **Email Notifications** - SMTP-based alerts for:
   - Available photo count updates
   - Low storage warnings (when photos ≤ 10)
@@ -56,47 +63,66 @@ InstaPyFlow is an automation toolkit designed to simplify Instagram account mana
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Language** | Python 3.x |
-| **Core Library** | instabot |
-| **Image Processing** | Pillow (PIL) |
-| **Email Protocol** | smtplib (Python built-in) |
-| **Virtual Environment** | Python venv |
-| **Package Manager** | pip |
+| Category | Technology | Version |
+|----------|------------|---------|
+| **Language** | Python | 3.x |
+| **Core Library** | instabot | Latest |
+| **Image Processing** | Pillow (PIL) | Latest |
+| **Email Protocol** | smtplib | Python Built-in |
+| **Virtual Environment** | Python venv | Built-in |
+| **Package Manager** | pip | Latest |
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        InstaPyFlow                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────────┐      ┌─────────────────────┐     │
-│  │    autoinsta.py     │      │   autoinsta_2.py    │     │
-│  │   (Simple Mode)     │      │   (Advanced Mode)   │     │
-│  └──────────┬──────────┘      └──────────┬──────────┘     │
-│             │                            │                 │
-│             ▼                            ▼                 │
-│  ┌─────────────────────┐      ┌─────────────────────┐     │
-│  │     instabot       │◄─────│     instabot       │     │
-│  │    (API Layer)     │      │    (API Layer)     │     │
-│  └──────────┬──────────┘      └──────────┬──────────┘     │
-│             │                            │                 │
-│             ▼                            ▼                 │
-│  ┌─────────────────────┐      ┌─────────────────────┐     │
-│  │  Instagram API     │      │  Instagram API     │     │
-│  └─────────────────────┘      └─────────────────────┘     │
-│                                     │                       │
-│                                     ▼                       │
-│                            ┌─────────────────────┐         │
-│                            │    SMTP Email       │         │
-│                            │   (Notifications)   │         │
-│                            └─────────────────────┘         │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                              InstaPyFlow                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌─────────────────────┐              ┌─────────────────────┐          │
+│  │   autoinsta.py      │              │   autoinsta_2.py    │          │
+│  │   (Basic Mode)      │              │   (Advanced Mode)   │          │
+│  └──────────┬──────────┘              └──────────┬──────────┘          │
+│             │                                   │                       │
+│             ▼                                   ▼                       │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │                      Core Modules                           │       │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐    │       │
+│  │  │   Bot       │  │   Image     │  │   SMTP          │    │       │
+│  │  │  Manager    │  │  Processor  │  │  Notifier       │    │       │
+│  │  └─────────────┘  └─────────────┘  └─────────────────┘    │       │
+│  └─────────────────────────────────────────────────────────────┘       │
+│                                 │                                       │
+│                                 ▼                                       │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │                      instabot Library                       │       │
+│  │                  (Instagram API Wrapper)                    │       │
+│  └─────────────────────────────────────────────────────────────┘       │
+│                                 │                                       │
+│                                 ▼                                       │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │                     Instagram Platform                      │       │
+│  │                  (Upload Photos & Media)                    │       │
+│  └─────────────────────────────────────────────────────────────┘       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Component Flow (Advanced Mode)
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Photos/   │────►│   Random    │────►│    Image    │────►│   Instagram │
+│   Folder    │     │   Picker    │     │  Processor  │     │   uploader  │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+                                                   │
+                                                   ▼
+                                          ┌──────────────┐
+                                          │   SMTP       │
+                                          │  Email       │
+                                          └──────────────┘
 ```
 
 ---
@@ -105,13 +131,14 @@ InstaPyFlow is an automation toolkit designed to simplify Instagram account mana
 
 ```
 InstaPyFlow/
-├── autoinsta.py           # Basic Instagram bot (single upload)
-├── autoinsta_2.py         # Advanced automation bot
-├── requirements.txt      # Project dependencies
-├── photos/               # Photo storage directory (auto-created)
-├── .venv/                # Python virtual environment
-├── .gitignore            # Git ignore rules
-└── README.md             # Project documentation
+├── autoinsta.py           # Basic Instagram bot (single photo upload)
+├── autoinsta_2.py         # Advanced automation bot with all features
+├── requirements.txt      # Project dependencies (instabot, pillow)
+├── photos/               # Photo storage directory (for advanced mode)
+│   └── image.png        # Sample photo
+├── image.jpg            # Sample image for basic mode
+├── LICENSE              # MIT License file
+└── README.md            # Project documentation
 ```
 
 ---
@@ -119,32 +146,43 @@ InstaPyFlow/
 ## Installation
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/yourusername/InstaPyFlow.git
 cd InstaPyFlow
 ```
 
 ### 2. Create Virtual Environment
+
+**Windows:**
 ```bash
-# Windows
 python -m venv .venv
 .venv\Scripts\activate
+```
 
-# Linux/Mac
+**Linux/Mac:**
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
+```
+
+Or install individually:
+
+```bash
+pip install instabot pillow
 ```
 
 ---
 
 ## Usage
 
-### Basic Upload (autoinsta.py)
+### Basic Mode (autoinsta.py)
 
 A simple script for uploading a single photo with caption.
 
@@ -165,16 +203,19 @@ python autoinsta.py
 
 ---
 
-### Advanced Automation (autoinsta_2.py)
+### Advanced Mode (autoinsta_2.py)
 
-A comprehensive automation script with random photo selection, format conversion, and email notifications.
+A comprehensive automation script with random photo selection, format conversion, aspect ratio validation, and email notifications.
 
-**Features:**
-- Randomly selects photos from `photos/` folder
-- Converts PNG to JPEG automatically
-- Sends email notifications when storage is low (≤10 photos)
-- Removes uploaded photos after posting
-- Sends confirmation email with photo count
+**Workflow:**
+1. Reads all photos from `photos/` directory
+2. Sends email notification with available photo count
+3. Randomly selects one photo
+4. Validates and resizes to 1080x1080 (Instagram optimal)
+5. Converts PNG to JPEG if needed
+6. Uploads to Instagram with caption
+7. Removes uploaded photo from storage
+8. Sends low storage alert if photos ≤ 10
 
 **Setup:**
 1. Create a `photos` folder in the project directory
@@ -195,7 +236,12 @@ python autoinsta_2.py
 Edit the credentials in `autoinsta.py`:
 
 ```python
+from instabot import Bot
+
+bot = Bot()
 bot.login(username="YOUR_USERNAME", password="YOUR_PASSWORD")
+
+# Upload photo
 bot.upload_photo("image.jpg", "Your Caption")
 ```
 
@@ -209,10 +255,10 @@ bot.login(username="YOUR_USERNAME", password="YOUR_PASSWORD")
 
 # Email Configuration (Gmail SMTP)
 email = "your_email@gmail.com"
-email_password = "your_app_password"
+password = "your_app_password"
 
 # Email Recipients
-send_email("receiver@example.com", "Subject", "Message")
+send_email("receiver@example.com", "Subject", "Body")
 ```
 
 ---
@@ -224,11 +270,6 @@ instabot
 Pillow>=9.0.0
 ```
 
-Install via:
-```bash
-pip install instabot Pillow
-```
-
 ---
 
 ## Supported Image Formats
@@ -237,7 +278,13 @@ pip install instabot Pillow
 |--------|------------|---------------|
 | JPEG   | ✅          | ✅             |
 | JPG    | ✅          | ✅             |
-| PNG    | ❌          | ✅ (auto-converts) |
+| PNG    | ❌          | ✅ (auto-converts to JPEG) |
+
+### Image Requirements (Advanced Mode)
+
+- **Optimal Size**: 1080x1080 pixels
+- **Aspect Ratio**: 1:1 (square)
+- **Automatic Resizing**: Images are automatically resized if not compatible
 
 ---
 
@@ -267,7 +314,7 @@ If using Gmail, you need to:
 
 ## License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**.
 
 ```
 MIT License
@@ -286,7 +333,11 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 ---

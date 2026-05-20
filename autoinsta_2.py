@@ -3,6 +3,7 @@ import os
 import random
 from PIL import Image
 import smtplib
+from instabot.api.api_photo import compatible_aspect_ratio
 
 bot = Bot()
 bot.login(username="Insta_UserName", password="Insta_Password")
@@ -34,8 +35,14 @@ file = random.choice(files_name)
 split_file_name = str(file).split(".")
 ext = str(split_file_name[1])
 
+img = Image.open(f"{os.getcwd()}/photos/{file}")
+size = img.size
+if not compatible_aspect_ratio(size):
+    new_size = (1080, 1080)
+    img = img.resize(new_size)
+    img.save(f"{os.getcwd()}/photos/{file}")
+
 if ext == "png":
-    img = Image.open(f"{os.getcwd()}/photos/{file}")
     img.convert("RGB").save(f"{os.getcwd()}/photos/converted_{file}.jpg")
     conv_file = f"converted_{file}.jpg"
     bot.upload_photo(f"{os.getcwd()}/photos/{conv_file}", "caption")
